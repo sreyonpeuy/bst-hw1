@@ -58,7 +58,7 @@ class BST(BinaryTree):
         nodes in the right subtree are >= node.value, while recursing down the tree.
         '''
         if node is None:
-        return True
+            return True
 
         if not (min_val <= node.value <= max_val):
             return False
