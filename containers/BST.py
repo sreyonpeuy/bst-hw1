@@ -1,267 +1,163 @@
 '''
-This file implements the Binary Search Tree data structure.
-The functions in this file are considerably harder than the functions in the BinaryTree file.
+This file implements the Node and BinaryTree classes.
+These two classes are the building blocks for the BST, AVLTree, and Heap
+data structures.
 '''
 
-from containers.BinaryTree import BinaryTree, Node
 
-
-class BST(BinaryTree):
+class Node():
     '''
-    The BST is a superclass of BinaryTree.
-    That means that the BST class "inherits" all of the methods from BinaryTree,
-    and we don't have to reimplement them.
+    Node data structure with assertion invariant checks.
     '''
 
-    def __init__(self, xs=None):
-        '''
-        FIXME:
-        If xs is a list (i.e. xs is not None),
-        then each element of xs needs to be inserted into the BST.
-        '''
-        super().__init__()
-        if xs is not None:
-            self.insert_list(xs)
+    def __init__(self, value, left=None, right=None):
+        self.value = value
+        self.left = left    # NOTE: left should always be a Node or None
+        self.right = right  # NOTE: right should always be a Node or None
+        self.assert_invariants()
 
-    def __repr__(self):
+    def assert_invariants(self):
         '''
-        Notice that in the BinaryTree class,
-        we defined a __str__ function,
-        but not a __repr__ function.
-        Recall that the __repr__ function should return a string that can be used to recreate a valid instance of the class.
-        Thus, if you create a variable using the command BST([1,2,3])
-        it's __repr__ will return "BST([1,2,3])"
+        Checks that children are Node instances or None.
+        '''
+        if self.left is not None:
+            assert isinstance(self.left, Node), (
+                f"left child must be a Node, got {type(self.left)}"
+            )
+        if self.right is not None:
+            assert isinstance(self.right, Node), (
+                f"right child must be a Node, got {type(self.right)}"
+            )
 
-        For the BST, type(self).__name__ will be the string "BST",
-        but for the AVLTree, this expression will be "AVLTree".
-        Using this expression ensures that all subclasses of BST will have a correct implementation of __repr__,
-        and that they won't have to reimplement it.
+    def __str__(self):
         '''
-        return type(self).__name__ + '(' + str(self.to_list('inorder')) + ')'
+        Visualizes the node in the format: (value (left) (right))
+        '''
+        self.assert_invariants()
+        out = '('
+        out += str(self.value)
+        if self.left:
+            out += ' '
+            out += str(self.left)
+        if self.right:
+            out += ' '
+            out += str(self.right)
+        out += ')'
+        return out
 
-    def is_bst_satisfied(self):
-        '''
-        Whenever you implement a data structure,
-        the first thing to do is to implement a function that checks whether
-        the structure obeys all of its laws.
-        This makes it possible to automatically test whether insert/delete functions
-        are actually working.
-        '''
-        if self.root:
-            return BST._is_bst_satisfied(self.root)
-        return True
 
-    @staticmethod
-    def _is_bst_satisfied(node):
-        '''
-        FIXME:
-        The current implementation has a bug:
-        it only checks if the children of the current node are less than/greater than,
-        rather than ensuring that all nodes to the left/right are less than/greater than.
+class BinaryTree():
+    '''
+    Superclass for the BST, AVLTree, and Heap classes.
+    '''
 
-        HINT:
-        Use the _find_smallest and _find_largest functions to fix the bug.
-        You should use the _ prefixed methods because those are static methods just like this one.
-'
-        ret = True
-        if node.left:
-            if node.value >= node.left.value:
-                ret &= BST._is_bst_satisfied(node.left)
+    def __init__(self, root=None):
+        if root is not None:
+            if isinstance(root, Node):
+                self.root = root
             else:
-                ret = False
-        if node.right:
-            if node.value <= node.right.value:
-                ret &= BST._is_bst_satisfied(node.right)
-            else:
-                ret = False
-        return ret
-        '''
-        ret = True
-        if node.left:
-            if node.value >= BST._find_largest(node.left):
-                ret &= BST._is_bst_satisfied(node.left)
-            else:
-                ret = False
-        if node.right:
-            if node.value <= BST._find_smallest(node.right):
-                ret &= BST._is_bst_satisfied(node.right)
-            else:
-                ret = False
-        return ret
-
-    def insert(self, value):
-        '''
-        Inserts value into the BST.
-
-        FIXME:
-        Implement this function.
-
-        HINT:
-        Create a staticmethod helper function following the pattern of _is_bst_satisfied.
-        '''
-        if self.root is None:
-            self.root = Node(value)
+                self.root = Node(root)
         else:
-            BST._insert(value, self.root)
+            self.root = None
 
-    @staticmethod
-    def _insert(value, node):
-        '''
-        Helper method for insert
-        '''
-        if value < node.value:
-            if node.left is None:
-                node.left = Node(value)
-            else:
-                BST._insert(value, node.left)
-        elif value > node.value:
-            if node.right is None:
-                node.right = Node(value)
-            else:
-                BST._insert(value, node.right)
-
-    def insert_list(self, xs):
-        '''
-        Given a list xs, insert each element of xs into self.
-
-        FIXME:
-        Implement this function.
-
-        HINT:
-        Repeatedly call the insert method.
-        You cannot get this method to work correctly until you have gotten insert to work correctly.
-        '''
-        for x in xs:
-            self.insert(x)
-
-    def __contains__(self, value):
-        '''
-        Recall that `x in tree` desugars to `tree.__contains__(x)`.
-        '''
-        return self.find(value)
-
-    def find(self, value):
-        '''
-        Returns whether value is contained in the BST.
-
-        FIXME:
-        Implement this function.
-        '''
+    def __str__(self):
         if self.root is None:
-            return False
-        return BST._find(value, self.root)
+            return '()'
+        return str(self.root)
+
+    def print_tree(self, traversal_type):
+        '''
+        Prints the tree nodes according to traversal_type.
+        '''
+        if traversal_type == 'preorder':
+            return self.preorder_print(self.root, '')
+        elif traversal_type == 'inorder':
+            return self.inorder_print(self.root, '')
+        elif traversal_type == 'postorder':
+            return self.postorder_print(self.root, '')
+        else:
+            raise ValueError(
+                'Traversal type ' + str(traversal_type) + ' is not supported.'
+            )
+
+    def preorder_print(self, start, traversal):
+        if start:
+            traversal += str(start.value) + '-'
+            traversal = self.preorder_print(start.left, traversal)
+            traversal = self.preorder_print(start.right, traversal)
+        return traversal
+
+    def inorder_print(self, start, traversal):
+        if start:
+            traversal = self.inorder_print(start.left, traversal)
+            traversal += str(start.value) + '-'
+            traversal = self.inorder_print(start.right, traversal)
+        return traversal
+
+    def postorder_print(self, start, traversal):
+        if start:
+            traversal = self.postorder_print(start.left, traversal)
+            traversal = self.postorder_print(start.right, traversal)
+            traversal += str(start.value) + '-'
+        return traversal
+
+    def to_list(self, traversal_type):
+        '''
+        Returns tree nodes as a Python list according to traversal_type.
+        '''
+        if traversal_type == 'preorder':
+            return self.preorder(self.root, [])
+        elif traversal_type == 'inorder':
+            return self.inorder(self.root, [])
+        elif traversal_type == 'postorder':
+            return self.postorder(self.root, [])
+        else:
+            raise ValueError(
+                'Traversal type ' + str(traversal_type) + ' is not supported.'
+            )
+
+    def preorder(self, start, traversal):
+        '''
+        Preorder: Root -> Left -> Right
+        '''
+        if start:
+            traversal.append(start.value)
+            self.preorder(start.left, traversal)
+            self.preorder(start.right, traversal)
+        return traversal
+
+    def inorder(self, start, traversal):
+        '''
+        Inorder: Left -> Root -> Right
+        '''
+        if start:
+            self.inorder(start.left, traversal)
+            traversal.append(start.value)
+            self.inorder(start.right, traversal)
+        return traversal
+
+    def postorder(self, start, traversal):
+        '''
+        Postorde: Left -> Right -> Root
+        '''
+        if start:
+            self.postorder(start.left, traversal)
+            self.postorder(start.right, traversal)
+            traversal.append(start.value)
+        return traversal
+
+    def __len__(self):
+        return BinaryTree.__len__helper(self.root)
 
     @staticmethod
-    def _find(value, node):
-        '''
-        FIXME:
-        Implement this function.
-        '''
+    def __len__helper(node):
         if node is None:
-            return False
-        if value == node.value:
-            return True
-        elif value < node.value:
-            return BST._find(value, node.left)
-        else:
-            return BST._find(value, node.right)
+            return 0
+        total = 1
+        if node.left:
+            total += BinaryTree.__len__helper(node.left)
+        if node.right:
+            total += BinaryTree.__len__helper(node.right)
+        return total
 
-    def find_smallest(self):
-        '''
-        Returns the smallest value in the tree.
-        '''
-        if self.root is None:
-            raise ValueError('Nothing in tree')
-        else:
-            return BST._find_smallest(self.root)
-
-    @staticmethod
-    def _find_smallest(node):
-        '''
-        This is a helper function for find_smallest and not intended to be called directly by the user.
-        '''
-        assert node is not None
-        if node.left is None:
-            return node.value
-        else:
-            return BST._find_smallest(node.left)
-
-    def find_largest(self):
-        '''
-        Returns the largest value in the tree.
-
-        FIXME:
-        Implement this function.
-
-        HINT:
-        Follow the pattern of the _find_smallest function.
-        '''
-        if self.root is None:
-            raise ValueError('Nothing in tree')
-        else:
-            return BST._find_largest(self.root)
-
-    @staticmethod
-    def _find_largest(node):
-        '''
-        Helper function to find the maximum element by traversing rightmost children.
-        '''
-        assert node is not None
-        if node.right is None:
-            return node.value
-        else:
-            return BST._find_largest(node.right)
-
-    def remove(self, value):
-        '''
-        Removes value from the BST.
-        If value is not in the BST, it does nothing.
-
-        FIXME:
-        Implement this function.
-
-        HINT:
-        You should have everything else working before you implement this function.
-
-        HINT:
-        Use a recursive helper function.
-        '''
-        self.root = BST._remove(value, self.root)
-
-    @staticmethod
-    def _remove(value, node):
-        '''
-        Recursive helper to delete a value and remake subtrees:
-        '''
-        if node is None:
-            return None
-
-        if value < node.value:
-            node.left = BST._remove(value, node.left)
-        elif value > node.value:
-            node.right = BST._remove(value, node.right)
-        else:
-            if node.left is None:
-                return node.right
-            elif node.right is None:
-                return node.left
-            else:
-                # 2 children
-                successor_val = BST._find_smallest(node.right)
-                node.value = successor_val
-                node.right = BST._remove(successor_val, node.right)
-
-        return node
-
-    def remove_list(self, xs):
-        '''
-        Given a list xs, remove each element of xs from self.
-
-        FIXME:
-        Implement this function.
-
-        HINT:
-        See the insert_list function.
-        '''
-        for x in xs:
-            self.remove(x)
+    def height:
