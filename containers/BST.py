@@ -37,10 +37,13 @@ class BST(BinaryTree):
         if not (min_val <= node.value <= max_val):
             return False
 
-        return (
-            BST._is_bst_satisfied(node.left, min_val, node.value) and
-            BST._is_bst_satisfied(node.right, node.value, max_val)
-        )
+        if not BST._is_bst_satisfied(node.left, min_val, node.value):
+            return False
+
+        if not BST._is_bst_satisfied(node.right, node.value, max_val):
+            return False
+
+        return True
 
     def insert(self, value):
         '''
