@@ -151,6 +151,7 @@ class BST(BinaryTree):
             return False
         return BST._find(value, self.root)
 
+    @staticmethod
     def _find(value, node):
         '''
         FIXME:
