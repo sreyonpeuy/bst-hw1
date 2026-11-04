@@ -125,22 +125,18 @@ def test__BST___contains__1(xs):
         assert x in bst
 
 
-@given(xs=ints)
-def test__BST___contains__2(xs):
+    @given(xs=ints)
+    def test__BST___contains__2(xs):
     '''
     Checks that if a value is NOT in the bst then __contains__ returns False
     '''
-    xs = list(set(xs))
-    if len(xs)>0:
-        while True:
-            x = random.uniform(min(xs)-1,max(xs)+1)
-            if x not in xs:
-                break
-    else:
-        x = 10
-    bst = BST(xs)
-    assert x not in bst
-
+        xs = list(set(xs))
+        bst = BST(xs)
+        if len(xs)>0:
+            for i in range(1000):
+                x = random.uniform(min(xs)-1,max(xs)+1)
+                if x not in xs:
+                    assert x not in bst
 
 @given(xs=ints)
 def test__BST_find_smallest(xs):
