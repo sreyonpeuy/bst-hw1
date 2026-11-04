@@ -125,7 +125,7 @@ def test__BST___contains__1(xs):
         assert x in bst
 
 
-    @given(xs=ints)
+@given(xs=ints)
 def test__BST___contains__2(xs):
     '''
     Checks that if a value is NOT in the bst then __contains__ returns False
