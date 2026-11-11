@@ -6,6 +6,7 @@ but there are fewer of them.
 
 from containers.BinaryTree import BinaryTree, Node
 from containers.BST import BST
+import copy
 
 
 class AVLTree(BST):
@@ -74,6 +75,7 @@ class AVLTree(BST):
         if node is None or node.right is None:
             return node
 
+        node = copy.deepcopy(node)
         new_root = node.right
         node.right = new_root.left
         new_root.left = node
@@ -93,6 +95,7 @@ class AVLTree(BST):
         '''
         if node is None or node.left is None:
             return node
+        node = copy.deepcopy(node)
         new_root = node.left
         node.left = new_root.right
         new_root.right = node
