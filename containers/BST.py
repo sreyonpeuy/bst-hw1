@@ -58,6 +58,13 @@ class BST(BinaryTree):
             return False
         return self.to_list('inorder') == t2.to_list('inorder')
 
+    def __iter__(self):
+        '''
+        Returns an iterator over the tree that is in sorted order.
+        Refered back to containers/BinaryTree and dound to list and inorder functions
+        '''
+        return iter(self.to_list('inorder'))
+
     def is_bst_satisfied(self):
         '''
         Whenever you implement a data structure,

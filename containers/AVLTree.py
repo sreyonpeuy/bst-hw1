@@ -72,7 +72,8 @@ class AVLTree():
         however, so you will have to adapt their code.
         '''
         if node is None or node.right is None:
-            return node new_root = node.right
+            return node
+            new_root = node.right
             node.right = new_root.left
             new_root.left = node
         return new_root
@@ -89,11 +90,11 @@ class AVLTree():
         The textbook's class hierarchy for their AVL tree code is fairly different from our class hierarchy,
         however, so you will have to adapt their code.
         '''
-        if node is None or node.left is None: 
-            return node 
-            new_root = node.left 
-            node.left = new_root.right 
-            new_root.right = node 
+        if node is None or node.left is None:
+            return node
+            new_root = node.left
+            node.left = new_root.right
+            new_root.right = node
 
         return new_root
 
