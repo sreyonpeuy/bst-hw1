@@ -40,7 +40,7 @@ def range(a, b=None, c=None):
         stop = b
         step = c
 
-     if step == 0:
+    if step == 0:
         raise ValueError("range() arg 3 must not be zero")
 
     current = start
@@ -52,4 +52,3 @@ def range(a, b=None, c=None):
         while current > stop:
             yield current
             current += step
-

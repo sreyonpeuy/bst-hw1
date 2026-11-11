@@ -8,7 +8,7 @@ from containers.BinaryTree import BinaryTree, Node
 from containers.BST import BST
 
 
-class AVLTree():
+class AVLTree(BST):
     '''
     FIXME:
     AVLTree is currently not a subclass of BST.
@@ -78,7 +78,6 @@ class AVLTree():
             new_root.left = node
         return new_root
 
-
     @staticmethod
     def _right_rotate(node):
         '''
@@ -97,7 +96,6 @@ class AVLTree():
             new_root.right = node
 
         return new_root
-
 
     def insert(self, value):
         '''
