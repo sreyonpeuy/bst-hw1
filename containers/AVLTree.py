@@ -73,9 +73,11 @@ class AVLTree(BST):
         '''
         if node is None or node.right is None:
             return node
-            new_root = node.right
-            node.right = new_root.left
-            new_root.left = node
+
+        new_root = node.right
+        node.right = new_root.left
+        new_root.left = node
+
         return new_root
 
     @staticmethod
@@ -91,9 +93,9 @@ class AVLTree(BST):
         '''
         if node is None or node.left is None:
             return node
-            new_root = node.left
-            node.left = new_root.right
-            new_root.right = node
+        new_root = node.left
+        node.left = new_root.right
+        new_root.right = node
 
         return new_root
 
